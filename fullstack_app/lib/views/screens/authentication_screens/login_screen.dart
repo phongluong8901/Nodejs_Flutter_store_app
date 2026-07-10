@@ -1,11 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:fullstack_app/models/screens/authentication_screens/register_screen.dart';
+import 'package:fullstack_app/controllers/auth_controller.dart';
+import 'package:fullstack_app/views/screens/authentication_screens/register_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final AuthController _authController = AuthController();
+
+  // late String email;
+  final TextEditingController _emailController = TextEditingController();
+
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool isLoading = false;
+
+  loginUser() async {
+    setState(() {
+      isLoading = true;
+    });
+    await _authController
+        .signInUsers(
+          context: context,
+          // email: email,
+          // password: password,
+          email: _emailController.text,
+          password: _passwordController.text,
+        )
+        .whenComplete(() {
+          setState(() {
+            isLoading = false;
+          });
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +93,10 @@ class LoginScreen extends StatelessWidget {
                   ),
 
                   TextFormField(
+                    controller: _emailController,
+                    // onChanged: (value) {
+                    //   email = value;
+                    // },
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'enter your email!';
@@ -105,9 +143,13 @@ class LoginScreen extends StatelessWidget {
                   ),
 
                   TextFormField(
+                    controller: _passwordController,
+                    // onChanged: (value) {
+                    //   password = value;
+                    // },
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'enter your pasword!';
+                        return 'enter your password!';
                       } else {
                         return null;
                       }
@@ -141,9 +183,10 @@ class LoginScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   InkWell(
-                    onTap: () {
+                    onTap: () async {
                       if (_formKey.currentState!.validate()) {
-                        print('correct');
+                        loginUser();
+                        // print('correct');
                       } else {
                         print('failed');
                       }
@@ -231,14 +274,16 @@ class LoginScreen extends StatelessWidget {
                             ),
                           ),
                           Center(
-                            child: Text(
-                              'Sign in',
-                              style: GoogleFonts.lato(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            child: isLoading
+                                ? const CircularProgressIndicator()
+                                : Text(
+                                    'Sign in',
+                                    style: GoogleFonts.lato(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                           ),
                         ],
                       ),

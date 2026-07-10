@@ -1,0 +1,63 @@
+PS D:\A_Self_Proj\learn_flutter\project_2\backend_api> npm init
+This utility will walk you through creating a package.json file.
+It only covers the most common items, and tries to guess sensible defaults.
+
+See `npm help init` for definitive documentation on these fields
+and exactly what they do.
+
+Use `npm install <pkg>` afterwards to install a package and
+save it as a dependency in the package.json file.
+
+Press ^C at any time to quit.
+package name: (backend_api) 
+version: (1.0.0) 
+description: 
+entry point: (index.js) 
+test command: 
+git repository: 
+keywords: 
+author: 
+license: (ISC) 
+type: (commonjs) 
+About to write to D:\A_Self_Proj\learn_flutter\project_2\backend_api\package.json:
+
+{
+  "name": "backend_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
+
+
+Is this OK? (yes) 
+
+npm notice
+npm notice New minor version of npm available! 11.3.0 -> 11.18.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.18.0
+npm notice To update run: npm install -g npm@11.18.0
+npm notice
+PS D:\A_Self_Proj\learn_flutter\project_2\backend_api> 
+
+---
+npm i express
+
+--- mongo atlab: https://cloud.mongodb.com/v2/69a663d0503a482804ad4fc0#/overview
+npm i mongoose
+
+--- thunder client - test api
+localhost:3000/api/signup
+
+--- hash password
+npm i bcryptjs
+
+--- jwt
+npm install jsonwebtoken
+
+#---
+node index.js
