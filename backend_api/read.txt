@@ -56,5 +56,8 @@ localhost:3000/api/signup
 --- hash password
 npm i bcryptjs
 
+--- jwt
+npm install jsonwebtoken
+
 #---
 node index.js

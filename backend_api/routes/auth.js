@@ -1,6 +1,8 @@
 const express = require('express');
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 
 // 1. Phải khai báo authRouter trước
 const authRouter = express.Router();
@@ -25,6 +27,32 @@ authRouter.post('/api/signup', async (req, res) => {
         }
     } catch (error) {
         // Sửa lỗi chính tả từ errror thành error và e thành error
+        res.status(500).json({error: error.message});
+    }
+});
+
+// signin api endpoint
+authRouter.post('/api/signin', async(req,res) => {
+    try {
+        const {email, password} = req.body;
+        const findUser = await User.findOne({email});
+        if(!findUser) {
+            return res.status(400).json({msg: "User noi found with this email"});
+        } else {
+           const isMatch = await bcrypt.compare(password, findUser.password);
+           if(!isMatch) {
+                return res.status(400).json({msg:'Incorrect Password'});
+           } else {
+                const token = jwt.sign({id:findUser._id}, "passwordKey");
+
+                //remove sensitive information
+                const {password, ...useWithoutPassword} = findUser._doc;
+
+                //send the response
+                res.json({token, ...useWithoutPassword});
+           }
+        }
+    } catch (error) {
         res.status(500).json({error: error.message});
     }
 });

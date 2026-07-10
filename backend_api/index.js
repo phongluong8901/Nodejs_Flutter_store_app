@@ -1,7 +1,7 @@
 const express = require('express'); //import module
 const mongoose = require('mongoose');
+const cors = require('cors');
 
-const helloRoute = require('./routes/hello');
 const authRouter = require('./routes/auth');
 
 const PORT = 3000; //defind port number the server will listen on
@@ -12,12 +12,14 @@ const app = express();
 //mongodb string
 const DB = "mongodb+srv://phong:phong123@storedb.if70iek.mongodb.net/?appName=storeDB";
 
-// app.get("/hello", (req, res) => {
-//     res.send('Halo');
-// })
+app.use(cors({
+    origin: '*', 
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Origin', 'Content-Type', 'Accept', 'Authorization']
+}));
 
 //middleware - toregister routes or to mount routes
-app.use(helloRoute);
 app.use(express.json());
 app.use(authRouter);
 
