@@ -1,5 +1,5 @@
+import 'package:app_web_admin/views/main_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:fullstack_app/views/screens/authentication_screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,13 +13,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-
-      home: LoginScreen(),
+      title: 'Admin Manager',
+      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+      home: MainScreen(),
     );
   }
 }
