@@ -1,0 +1,34 @@
+class SubCategory {
+  final String id;
+  final String categoryId;
+  final String categoryName;
+  final String subCategoryName;
+  final String image;
+
+  SubCategory({
+    required this.id,
+    required this.categoryId,
+    required this.categoryName,
+    required this.subCategoryName,
+    required this.image,
+  });
+
+  factory SubCategory.fromJson(Map<String, dynamic> json) {
+    return SubCategory(
+      id: json['_id']?.toString() ?? '',
+      categoryId: json['categoryId']?.toString() ?? '',
+      categoryName: json['categoryName']?.toString() ?? '',
+      subCategoryName: json['subCategoryName']?.toString() ?? '',
+      image: json['image']?.toString() ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'categoryId': categoryId,
+      'categoryName': categoryName,
+      'subCategoryName': subCategoryName,
+      'image': image,
+    };
+  }
+}

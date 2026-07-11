@@ -12,7 +12,6 @@ const categorySchema = mongoose.Schema({
 
     banner: {
         type: String,
-        required: true,
     }
 });
 
