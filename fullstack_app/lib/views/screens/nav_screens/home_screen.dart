@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fullstack_app/views/screens/nav_screens/widgets/banner_widget.dart';
+import 'package:fullstack_app/views/screens/nav_screens/widgets/category_widget.dart';
 import 'package:fullstack_app/views/screens/nav_screens/widgets/header_widget.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -7,7 +9,11 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(child: Column(children: [HeaderWidget()])),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [HeaderWidget(), BannerWidget(), CategoryWidget()],
+        ),
+      ),
     );
   }
 }
