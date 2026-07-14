@@ -8,8 +8,10 @@ const categoryRouter = require('./routes/category');
 const subcategoryRouter = require('./routes/sub_category');
 const productRouter = require('./routes/product');
 const productReviewRouter = require('./routes/product_review');
+const orderRouter = require('./routes/order');
 
 const vendorRouter = require('./routes/vendor');
+
 
 const PORT = 3000; //defind port number the server will listen on
 
@@ -34,6 +36,7 @@ app.use(categoryRouter);
 app.use(subcategoryRouter);
 app.use(productRouter);
 app.use(productReviewRouter);
+app.use(orderRouter);
 
 app.use(vendorRouter);
 
