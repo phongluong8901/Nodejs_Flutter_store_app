@@ -17,10 +17,10 @@ class MyApp extends ConsumerWidget {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     //retrive the authentication tolen and user data stored locally
     String? token = preferences.getString('auth_token');
-    String? userJson = preferences.getString('user');
+    String? vendorJson = preferences.getString('vendor');
     //if both token and user data are avaible, update the user state
-    if (token != null && userJson != null) {
-      ref.read(vendorProvider.notifier).setVendor(userJson);
+    if (token != null && vendorJson != null) {
+      ref.read(vendorProvider.notifier).setVendor(vendorJson);
     } else {
       ref.read(vendorProvider.notifier).signOut();
     }
@@ -31,7 +31,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Vendor admin',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
       home: FutureBuilder(
         future: _checkTokenAndSetUser(ref),
@@ -39,8 +39,8 @@ class MyApp extends ConsumerWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
-          final user = ref.watch(vendorProvider);
-          return user != null ? MainVendorScreen() : LoginScreen();
+          final vendor = ref.watch(vendorProvider);
+          return vendor != null ? MainVendorScreen() : LoginScreen();
         },
       ),
     );

@@ -21,3 +21,9 @@ git checkout -b 13/07/2026
 git add .
 git commit -m "change: add signout"
 git push -u origin 13/07/2026
+
+#---
+git checkout -b 14/07/2026
+git add .
+git commit -m "change: product, detail (vendor + user)"
+git push -u origin 14/07/2026

@@ -4,7 +4,7 @@ const Product = require('../models/product'); // 2. Import model (chỉ cần 1 
 
 productRouter.post('/api/add-product', async (req, res) => {
     try {
-        const { productName, productPrice, quantity, description, category, subCategory, images } = req.body;
+        const { productName, productPrice, quantity, description, category, vendorId, fullName, subCategory, images } = req.body;
         
         // 3. Đổi tên biến mới thành 'newProduct' để tránh trùng với tên import 'Product'
         const newProduct = new Product({
@@ -13,6 +13,8 @@ productRouter.post('/api/add-product', async (req, res) => {
             quantity, 
             description, 
             category, 
+            vendorId,
+            fullName,
             subCategory, 
             images
         });
@@ -34,6 +36,21 @@ productRouter.get('/api/popular-products', async(req,res) => {
         }
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+})
+
+/// new route for retrieving fproduct by category
+productRouter.get('/api/products-by-category/:category', async(req, res) => {
+    try {
+        const {category} = req.params;
+        const products = await Product.find({category});
+        if (!products || products.length==0) {
+            return res.status(404).json({msg: "Product not found"});
+        } else {
+            return res.status(200).json(products);
+        }
+    } catch (error) {
+        res.status(500).json({error:e.message});
     }
 })
 

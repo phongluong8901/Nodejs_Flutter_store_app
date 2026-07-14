@@ -58,6 +58,7 @@ class VendorAuthController {
     required String email,
     required String password,
     required context,
+    required WidgetRef ref,
   }) async {
     try {
       http.Response response = await http.post(
@@ -73,28 +74,24 @@ class VendorAuthController {
         context: context,
         onSuccess: () async {
           SharedPreferences preferences = await SharedPreferences.getInstance();
-          //Extract the authentication tolen from response body
           String token = jsonDecode(response.body)['token'];
-          //Store the auth token security in shaprePrefre...
           await preferences.setString('auth_token', token);
-          //Encode the user data received from the backend as json
+
           final vendorJson = jsonEncode(jsonDecode(response.body)['vendor']);
-          //updaet the application state with the user data using revipod
-          providerContainer.read(vendorProvider.notifier).setVendor(vendorJson);
-          //store the data in sharePreferene for future use
+
+          // DÙNG REF ĐỂ CẬP NHẬT TRẠNG THÁI (Đừng dùng providerContainer)
+          ref.read(vendorProvider.notifier).setVendor(vendorJson);
+
           await preferences.setString('vendor', vendorJson);
 
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(
-              builder: (context) {
-                return MainVendorScreen();
-              },
-            ),
+            MaterialPageRoute(builder: (context) => MainVendorScreen()),
             (route) => false,
           );
-
           showSnackBar(context, 'Logged in successfully');
+          final currentVendor = ref.read(vendorProvider);
+          print("DEBUG: Sau khi đăng nhập, dữ liệu Vendor là: $currentVendor");
         },
       );
     } catch (e) {

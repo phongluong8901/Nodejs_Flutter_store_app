@@ -35,7 +35,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'User store',
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,

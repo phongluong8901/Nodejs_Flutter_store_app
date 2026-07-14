@@ -45,7 +45,7 @@ vendorRouter.post('/api/vendor/signin', async(req,res) => {
                 const {password, ...vendorWithoutPassword} = findVendor._doc;
 
                 //send the response
-                res.json({token, vender: vendorWithoutPassword});
+                res.json({token, vendor: vendorWithoutPassword});
            }
         }
     } catch (error) {
