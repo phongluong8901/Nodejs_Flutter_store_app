@@ -24,7 +24,7 @@ const DB = "mongodb+srv://phong:phong123@storedb.if70iek.mongodb.net/?appName=st
 app.use(cors({
     origin: '*', 
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Origin', 'Content-Type', 'Accept', 'Authorization']
 }));
 

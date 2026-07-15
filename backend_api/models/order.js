@@ -55,7 +55,7 @@ const orderSchema = mongoose.Schema({
     },
     delivered: {
         type: Boolean,
-        reqdefaultired: false,
+        default: false,
     },
     createdAt: {
         type: Number,

@@ -58,4 +58,59 @@ orderRouter.delete("/api/orders/:id", async(req, res) => {
         res.status(500).json({error: error.message});
     }
 });
+
+// get route for fetching order by vendor ID
+orderRouter.get('/api/orders/vendors/:vendorId', async(req, res) => {
+    try {
+        //extract the vendorId from the request parameters
+        const {vendorId} = req.params;
+        //find all orders in the databse  that match the vendorId
+        const orders = await Order.find({vendorId});
+        //if no order arefound, return a 404 status with a message
+        if(orders.length===0) {
+            return res.status(404).json({msg: "No orders found for this vendorId"});
+        }
+        //if orders are found, return them with a 200 status code
+        return res.status(200).json(orders);
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+});
+
+orderRouter.patch('/api/orders/:id/delivered', async(req,res) => {
+    try {
+        const {id} = req.params;
+        const updatedOrder = await Order.findByIdAndUpdate(
+            id,
+            {delivered: true, processing: false},
+            {new: true},
+        );
+        if(!updatedOrder) {
+            return res.status(404).json({msg: "Order not found"});
+        } else {
+            return res.status(200).json(updatedOrder);
+        }
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+})
+
+orderRouter.patch('/api/orders/:id/processing', async(req,res) => {
+    try {
+        const {id} = req.params;
+        const updatedOrder = await Order.findByIdAndUpdate(
+            id,
+            {delivered: false, processing: false},
+            {new: true},
+        );
+        if(!updatedOrder) {
+            return res.status(404).json({msg: "Order not found"});
+        } else {
+            return res.status(200).json(updatedOrder);
+        }
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+})
+
 module.exports = orderRouter;

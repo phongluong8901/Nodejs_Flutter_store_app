@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fullstack_app/controllers/order_controller.dart';
 import 'package:fullstack_app/models/order.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -13,6 +14,7 @@ class OrderDetailScreen extends StatefulWidget {
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
   final TextEditingController _reviewController = TextEditingController();
+  final OrderController orderController = OrderController();
 
   double rating = 0.0;
 
