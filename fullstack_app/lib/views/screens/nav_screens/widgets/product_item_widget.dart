@@ -80,6 +80,14 @@ class ProductItemWidget extends StatelessWidget {
                 color: Color(0xff868D94),
               ),
             ),
+            Text(
+              "\$${product.productPrice.toStringAsFixed(2)}",
+              style: GoogleFonts.montserrat(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.purple,
+              ),
+            ),
           ],
         ),
       ),

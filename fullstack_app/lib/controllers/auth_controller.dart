@@ -128,4 +128,51 @@ class AuthController {
       showSnackBar(context, 'error signing out');
     }
   }
+
+  //update user's state, city, locality
+  Future<void> updateUserLocation({
+    required context,
+    required String id,
+    required String state,
+    required String city,
+    required String locality,
+  }) async {
+    try {
+      //make an HTTP PUT request to update user's state, city and locality
+      final http.Response response = await http.put(
+        Uri.parse("$uri/api/users/$id"),
+        //encode the update data(state, city and locality) as json object
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'state': state, 'city': city, 'locality': locality}),
+      );
+
+      manageHttpResponse(
+        response: response,
+        context: context,
+        onSuccess: () async {
+          //Decode the updated user data from the response body
+          //this converts the json String response into Darrt Map
+          final updatedUser = jsonDecode(response.body);
+          //Access Shared preference for local data storage
+          //shared preference allow us to store data persisitently on the device
+          SharedPreferences preferences = await SharedPreferences.getInstance();
+          //encode the update user data as json String
+          //this prepares the data for storage in shared preferences
+          final userJson = jsonEncode(updatedUser);
+          //update the application state with the update user data user in Revipod
+          //this ensures the app reflects the most recent user data
+          providerContainer.read(userProvider.notifier).setUser(userJson);
+          //store the updated user data in shared preference for future user
+          //this allows the app to retrive the user data even after the app restarts
+          await preferences.setString('user', userJson);
+        },
+      );
+    } catch (e) {
+      //catch any error that occure during the the prcoess
+      //show an error message to user if the update fails
+      showSnackBar(context, 'Error updateing location');
+    }
+  }
 }

@@ -27,3 +27,9 @@ git checkout -b 14/07/2026
 git add .
 git commit -m "change: product, detail (vendor + user)"
 git push -u origin 14/07/2026
+
+#---
+git checkout -b 15/07/2026
+git add .
+git commit -m "change: improve (detail,home,checkout,address)"
+git push -u origin 15/07/2026

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fullstack_app/views/screens/detail/checkout_screen.dart';
+import 'package:fullstack_app/views/screens/detail/screens/checkout_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fullstack_app/provider/cart_provider.dart';
 
@@ -222,16 +222,18 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return CheckoutScreen();
+                        onPressed: totalAmount == 0.0
+                            ? null
+                            : () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return CheckoutScreen();
+                                    },
+                                  ),
+                                );
                               },
-                            ),
-                          );
-                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,
                           padding: const EdgeInsets.symmetric(
