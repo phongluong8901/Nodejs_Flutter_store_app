@@ -56,28 +56,31 @@ class Order {
     };
   }
 
-  factory Order.fromMap(Map<String, dynamic> map) {
+  factory Order.fromJson(Map<String, dynamic> map) {
     return Order(
-      id: map['_id'] as String,
-      fullName: map['fullName'] as String,
-      email: map['email'] as String,
-      state: map['state'] as String,
-      city: map['city'] as String,
-      locality: map['locality'] as String,
-      productName: map['productName'] as String,
-      productPrice: map['productPrice'] as int,
-      quantity: map['quantity'] as int,
-      category: map['category'] as String,
-      image: map['image'] as String,
-      buyerId: map['buyerId'] as String,
-      vendorId: map['vendorId'] as String,
-      processing: map['processing'] as bool,
-      delivered: map['delivered'] as bool,
+      id: map['_id']?.toString() ?? '',
+      fullName: map['fullName']?.toString() ?? '',
+      email: map['email']?.toString() ?? '',
+      state: map['state']?.toString() ?? '',
+      city: map['city']?.toString() ?? '',
+      locality: map['locality']?.toString() ?? '',
+      productName: map['productName']?.toString() ?? '',
+      // Với số, dùng .toInt() và gán giá trị mặc định là 0 nếu null
+      productPrice: (map['productPrice'] ?? 0).toInt(),
+      quantity: (map['quantity'] ?? 0).toInt(),
+      category: map['category']?.toString() ?? '',
+      // Chú ý: dùng 'images' như bạn đã xác nhận
+      image: map['images']?.toString() ?? '',
+      buyerId: map['buyerId']?.toString() ?? '',
+      vendorId: map['vendorId']?.toString() ?? '',
+      // Với bool, gán giá trị mặc định là false nếu null
+      processing: map['processing'] ?? false,
+      delivered: map['delivered'] ?? false,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Order.fromJson(String source) =>
-      Order.fromMap(json.decode(source) as Map<String, dynamic>);
+  // factory Order.fromJson(String source) =>
+  //     Order.fromMap(json.decode(source) as Map<String, dynamic>);
 }
