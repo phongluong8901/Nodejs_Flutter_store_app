@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fullstack_app/views/screens/nav_screens/widgets/banner_widget.dart';
-import 'package:fullstack_app/views/screens/nav_screens/widgets/category_widget.dart';
+import 'package:fullstack_app/views/screens/nav_screens/widgets/category_item_widget.dart';
 import 'package:fullstack_app/views/screens/nav_screens/widgets/header_widget.dart';
 import 'package:fullstack_app/views/screens/nav_screens/widgets/popular_product_widget.dart';
 import 'package:fullstack_app/views/screens/nav_screens/widgets/reuseble_text_widget.dart';
@@ -16,7 +16,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             HeaderWidget(),
             BannerWidget(),
-            CategoryWidget(),
+            CategoryItemWidget(),
             ReusableTextWidget(title: 'Polular Porducts', subtitle: 'view all'),
             PopularProductWidget(),
           ],

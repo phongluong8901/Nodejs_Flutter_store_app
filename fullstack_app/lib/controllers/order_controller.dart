@@ -92,4 +92,28 @@ class OrderController {
       throw Exception("Error Loading");
     }
   }
+
+  //delete order by Id
+  Future<void> deleteOrder({required String id, required context}) async {
+    try {
+      //sned an HTTP delete req to delete the order by _id
+      http.Response response = await http.delete(
+        Uri.parse("$uri/api/orders/$id"),
+        headers: <String, String>{
+          "Content-Type": 'application/json; charset=UTF-8',
+        },
+      );
+
+      //handle the Http response
+      manageHttpResponse(
+        response: response,
+        context: context,
+        onSuccess: () {
+          showSnackBar(context, 'Order Deleted successfully');
+        },
+      );
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
+  }
 }
