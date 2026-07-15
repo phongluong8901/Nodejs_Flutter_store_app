@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fullstack_app/controllers/order_controller.dart';
+import 'package:fullstack_app/controllers/product_review_controller.dart';
 import 'package:fullstack_app/models/order.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:custom_rating_bar/custom_rating_bar.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   final Order order;
@@ -15,8 +17,10 @@ class OrderDetailScreen extends StatefulWidget {
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
   final TextEditingController _reviewController = TextEditingController();
   final OrderController orderController = OrderController();
+  final ProductReviewController _productReviewController =
+      ProductReviewController();
 
-  double rating = 0.0;
+  double rating = 3.0;
 
   @override
   Widget build(BuildContext context) {
@@ -262,11 +266,35 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                           labelText: 'Your Review',
                                         ),
                                       ),
+                                      RatingBar(
+                                        filledIcon: Icons.star,
+                                        emptyIcon: Icons.star_border,
+                                        onRatingChanged: (value) {
+                                          rating = value;
+                                        },
+                                        initialRating: 3,
+                                        maxRating: 5,
+                                      ),
                                     ],
                                   ),
                                   actions: [
                                     TextButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        final review = _reviewController.text;
+                                        _productReviewController.uploadReview(
+                                          buyerId: widget.order.buyerId,
+                                          email: widget.order.email,
+                                          fullName: widget.order.fullName,
+                                          productId: widget.order.id,
+                                          rating: rating,
+                                          review: review,
+                                          context: context,
+                                        );
+                                        // Đóng dialog sau khi xử lý xong
+                                        if (context.mounted) {
+                                          Navigator.pop(context);
+                                        }
+                                      },
                                       child: const Text('Submit'),
                                     ),
                                   ],
