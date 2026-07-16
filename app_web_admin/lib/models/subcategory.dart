@@ -1,11 +1,11 @@
-class SubCategory {
+class SubCategoryModel {
   final String id;
   final String categoryId;
   final String categoryName;
   final String subCategoryName;
   final String image;
 
-  SubCategory({
+  SubCategoryModel({
     required this.id,
     required this.categoryId,
     required this.categoryName,
@@ -13,8 +13,8 @@ class SubCategory {
     required this.image,
   });
 
-  factory SubCategory.fromJson(Map<String, dynamic> json) {
-    return SubCategory(
+  factory SubCategoryModel.fromJson(Map<String, dynamic> json) {
+    return SubCategoryModel(
       id: json['_id']?.toString() ?? '',
       categoryId: json['categoryId']?.toString() ?? '',
       categoryName: json['categoryName']?.toString() ?? '',

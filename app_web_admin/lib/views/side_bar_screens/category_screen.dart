@@ -19,7 +19,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final CategoryController _categoryController = CategoryController();
 
-  List<Category> _categories = [];
+  List<CategoryModel> _categories = [];
   String categoryName = '';
   Uint8List? _image;
   Uint8List? _bannerImage;
@@ -78,7 +78,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     }
   }
 
-  void _showDetailDialog(BuildContext context, Category cat) {
+  void _showDetailDialog(BuildContext context, CategoryModel cat) {
     showDialog(
       context: context,
       builder: (context) => CategoryDetailDialog(category: cat),
@@ -211,7 +211,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     );
   }
 
-  Widget _buildCategoryCard(Category cat) {
+  Widget _buildCategoryCard(CategoryModel cat) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,

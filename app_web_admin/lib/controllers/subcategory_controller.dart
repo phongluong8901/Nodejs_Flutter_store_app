@@ -82,7 +82,7 @@ class SubCategoryController {
   }
 
   /// Lấy danh sách SubCategory theo categoryName
-  Future<List<SubCategory>> getSubCategories(String categoryName) async {
+  Future<List<SubCategoryModel>> getSubCategories(String categoryName) async {
     try {
       // Encode tên category để tránh lỗi ký tự đặc biệt trên URL
       final encodedCategory = Uri.encodeComponent(categoryName);
@@ -94,7 +94,7 @@ class SubCategoryController {
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         // Sử dụng .map an toàn hơn, lọc bỏ các items null
-        return data.map((item) => SubCategory.fromJson(item)).toList();
+        return data.map((item) => SubCategoryModel.fromJson(item)).toList();
       } else if (response.statusCode == 404) {
         debugPrint("No subcategories found for: $categoryName");
         return [];
@@ -111,5 +111,34 @@ class SubCategoryController {
   // Giải phóng client khi không dùng nữa
   void dispose() {
     _client.close();
+  }
+
+  // get all subcategory
+
+  Future<List<SubCategoryModel>> loadSubCategories() async {
+    try {
+      http.Response response = await http.get(
+        Uri.parse('$uri/api/subcategories'),
+        headers: <String, String>{
+          "Content-Type": 'application/json; charset=UTF-8',
+        },
+      );
+
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+
+        List<SubCategoryModel> subCategories = data
+            .map((subcategory) => SubCategoryModel.fromJson(subcategory))
+            .toList();
+
+        return subCategories;
+      } else {
+        throw Exception('failed to upload Subcategory');
+      }
+    } catch (e) {
+      throw Exception('error loading Subcategory: $e');
+    }
   }
 }

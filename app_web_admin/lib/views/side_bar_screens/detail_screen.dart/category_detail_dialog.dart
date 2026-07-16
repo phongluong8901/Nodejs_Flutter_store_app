@@ -2,7 +2,7 @@ import 'package:app_web_admin/models/category.dart';
 import 'package:flutter/material.dart';
 
 class CategoryDetailDialog extends StatelessWidget {
-  final Category category;
+  final CategoryModel category;
 
   const CategoryDetailDialog({super.key, required this.category});
 

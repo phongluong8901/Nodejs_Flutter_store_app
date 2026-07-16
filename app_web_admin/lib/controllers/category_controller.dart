@@ -58,7 +58,7 @@ class CategoryController {
               ? await uploadToCloudinary(localBanner, 'banners') ?? ""
               : "");
 
-      Category category = Category(
+      CategoryModel category = CategoryModel(
         id: "",
         name: name,
         image: finalImageUrl,
@@ -83,12 +83,12 @@ class CategoryController {
     }
   }
 
-  Future<List<Category>> getCategories() async {
+  Future<List<CategoryModel>> getCategories() async {
     final response = await http.get(Uri.parse("$uri/api/categories"));
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
       final List<dynamic> data = responseData['categories'];
-      return data.map((item) => Category.fromJson(item)).toList();
+      return data.map((item) => CategoryModel.fromJson(item)).toList();
     }
     return [];
   }
@@ -106,5 +106,34 @@ class CategoryController {
       return [];
     }
     return [];
+  }
+
+  // get all category
+
+  Future<List<CategoryModel>> loadCategories() async {
+    try {
+      http.Response response = await http.get(
+        Uri.parse('$uri/api/categories'),
+        headers: <String, String>{
+          "Content-Type": 'application/json; charset=UTF-8',
+        },
+      );
+
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+
+        List<CategoryModel> categories = data
+            .map((categori) => CategoryModel.fromJson(categori))
+            .toList();
+
+        return categories;
+      } else {
+        throw Exception('failed to upload category');
+      }
+    } catch (e) {
+      throw Exception('error loading category: $e');
+    }
   }
 }

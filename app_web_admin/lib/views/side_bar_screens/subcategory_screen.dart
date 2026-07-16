@@ -19,9 +19,9 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
   final CategoryController _categoryController = CategoryController();
   final SubCategoryController _subCategoryController = SubCategoryController();
 
-  List<Category> _categories = [];
-  List<SubCategory> _subCategories = [];
-  Category? _selectedCategory;
+  List<CategoryModel> _categories = [];
+  List<SubCategoryModel> _subCategories = [];
+  CategoryModel? _selectedCategory;
   Uint8List? _image;
   String? _selectedImageUrl;
   String _subCategoryName = '';
@@ -125,7 +125,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
               padding: const EdgeInsets.all(25.0),
               child: Column(
                 children: [
-                  DropdownButtonFormField<Category>(
+                  DropdownButtonFormField<CategoryModel>(
                     value: _selectedCategory,
                     decoration: const InputDecoration(
                       labelText: 'Select Category',

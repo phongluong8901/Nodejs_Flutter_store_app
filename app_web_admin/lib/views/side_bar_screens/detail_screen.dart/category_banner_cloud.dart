@@ -30,7 +30,7 @@ class _CloudLibraryDialogState extends State<CloudLibraryDialog> {
         urls = await _controller.getBannerUrls();
       } else {
         // GỌI SERVICE CATEGORY
-        List<Category> categories = await _controller.getCategories();
+        List<CategoryModel> categories = await _controller.getCategories();
         for (var cat in categories) {
           if (cat.image.isNotEmpty) urls.add(cat.image);
         }
