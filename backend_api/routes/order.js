@@ -1,9 +1,10 @@
 const express = require('express');
 const Order = require('../models/order');
+const {auth, vendorAuth} = require('../middleware/auth');
 
 const orderRouter = express.Router();
 
-orderRouter.post('/api/orders', async(req, res) => {
+orderRouter.post('/api/orders', auth, async(req, res) => {
     try {
         const {fullName, email, state, city, locality, productName, productPrice, quantity, category, images, vendorId, buyerId} = req.body;
         // const createdAt = new Date().getMilliseconds // get current date
@@ -22,7 +23,7 @@ orderRouter.post('/api/orders', async(req, res) => {
 });
 
 // get route for fetching order by buyer ID
-orderRouter.get('/api/orders/:buyerId', async(req, res) => {
+orderRouter.get('/api/orders/:buyerId', auth, async(req, res) => {
     try {
         //extract the buyerid from the request parameters
         const {buyerId} = req.params;
@@ -40,7 +41,7 @@ orderRouter.get('/api/orders/:buyerId', async(req, res) => {
 });
 
 //delete router for deleting a specific order by_id
-orderRouter.delete("/api/orders/:id", async(req, res) => {
+orderRouter.delete("/api/orders/:id", auth, async(req, res) => {
     try {
         //extract the id from the rwequest parameter
         const {id} = req.params;
@@ -60,7 +61,7 @@ orderRouter.delete("/api/orders/:id", async(req, res) => {
 });
 
 // get route for fetching order by vendor ID
-orderRouter.get('/api/orders/vendors/:vendorId', async(req, res) => {
+orderRouter.get('/api/orders/vendors/:vendorId', auth, vendorAuth, async(req, res) => {
     try {
         //extract the vendorId from the request parameters
         const {vendorId} = req.params;

@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:vendor_store_app/views/global_variables.dart';
 import 'dart:typed_data'; // Quan trọng cho Web
 import 'package:flutter/foundation.dart' show kIsWeb; // Để check Web
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductController {
   Future<void> uploadProduct({
@@ -23,6 +24,8 @@ class ProductController {
     required List<XFile>? pickedImages, // Vẫn nhận File để tương thích code cũ
     required context,
   }) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? token = preferences.getString('auth_token');
     if (pickedImages != null && pickedImages.isNotEmpty) {
       final cloudinary = CloudinaryPublic("detbxbjxd", "nodejs_vendor_app");
       List<String> images = [];
@@ -72,6 +75,7 @@ class ProductController {
           body: jsonEncode(product.toMap()),
           headers: <String, String>{
             "Content-Type": "application/json; charset=UTF-8",
+            'x-auth-token': token!,
           },
         );
 

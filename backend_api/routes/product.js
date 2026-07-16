@@ -1,8 +1,9 @@
 const express = require('express');
 const productRouter = express.Router(); // 1. KHAI BÁO BIẾN NÀY ĐẦU TIÊN
 const Product = require('../models/product'); // 2. Import model (chỉ cần 1 lần)
+const {auth, vendorAuth} = require('../middleware/auth');
 
-productRouter.post('/api/add-product', async (req, res) => {
+productRouter.post('/api/add-product', auth, vendorAuth, async (req, res) => {
     try {
         const { productName, productPrice, quantity, description, category, vendorId, fullName, subCategory, images } = req.body;
         

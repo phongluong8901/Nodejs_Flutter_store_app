@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:vendor_store_app/models/order.dart';
 import 'package:vendor_store_app/services/manage_http_response.dart';
 import 'package:vendor_store_app/views/global_variables.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OrderController {
   //fucntion to upload orders
@@ -26,6 +27,8 @@ class OrderController {
     required context,
   }) async {
     try {
+      // SharedPreferences preferences = await SharedPreferences.getInstance();
+      // String? token = preferences.getString('auth_token');
       final Order order = Order(
         id: id,
         fullName: fullName,
@@ -48,6 +51,7 @@ class OrderController {
         body: order.toJson(),
         headers: <String, String>{
           "Content-Type": 'application/json; charset=UTF-8',
+          // 'x-auth-token': token!,
         },
       );
       manageHttpResponse(
@@ -65,11 +69,14 @@ class OrderController {
   //method to get orsers by buyers id
   Future<List<Order>> loadOrders({required String vendorId}) async {
     try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      String? token = preferences.getString('auth_token');
       //send an HTTP get request to get the orders by the vendorId
       http.Response response = await http.get(
         Uri.parse('$uri/api/orders/vendors/$vendorId'),
         headers: <String, String>{
           "Content-Type": 'application/json; charset=UTF-8',
+          'x-auth-token': token!,
         },
       );
       //check if the response status code is 200(OK)
