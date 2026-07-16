@@ -1,21 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fullstack_app/models/product.dart';
+import 'package:fullstack_app/provider/cart_provider.dart';
+import 'package:fullstack_app/provider/favorite_provider.dart';
+import 'package:fullstack_app/services/manage_http_response.dart';
 import 'package:fullstack_app/views/screens/detail/screens/product_detail_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ProductItemWidget extends StatelessWidget {
+class ProductItemWidget extends ConsumerStatefulWidget {
   final Product product;
   const ProductItemWidget({required this.product, super.key});
 
   @override
+  _ProductItemWidgetState createState() => _ProductItemWidgetState();
+}
+
+class _ProductItemWidgetState extends ConsumerState<ProductItemWidget> {
+  @override
   Widget build(BuildContext context) {
+    final _cartProviderData = ref.read(cartProvider.notifier);
+    final cartData = ref.watch(cartProvider);
+    final isInCart = cartData.containsKey(widget.product.id);
+    ref.watch(favoriteProvider);
+    final favoriteProviderData = ref.read(favoriteProvider.notifier);
+
     return InkWell(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) {
-              return ProductDetailScreen(product: product);
+              return ProductDetailScreen(product: widget.product);
             },
           ),
         );
@@ -35,27 +50,72 @@ class ProductItemWidget extends StatelessWidget {
               child: Stack(
                 children: [
                   Image.network(
-                    product.images[0],
+                    widget.product.images[0],
                     height: 170,
                     width: 170,
                     fit: BoxFit.cover,
                   ),
                   Positioned(
-                    top: 15,
+                    top: 5,
                     right: 2,
-                    child: Image.asset(
-                      'assets/icons/love.png',
-                      width: 26,
-                      height: 26,
+                    child: InkWell(
+                      onTap: () {
+                        favoriteProviderData.addProductToFavorite(
+                          productName: widget.product.productName,
+                          productPrice: widget.product.productPrice,
+                          category: widget.product.category,
+                          image: widget.product.images,
+                          vendorId: widget.product.vendorId,
+                          productQuantity: widget.product.quantity,
+                          quantity: 1,
+                          productId: widget.product.id,
+                          description: widget.product.description,
+                          fullName: widget.product.fullName,
+                        );
+                        showSnackBar(
+                          context,
+                          'added ${widget.product.productName}',
+                        );
+                      },
+                      child:
+                          favoriteProviderData.getFavoriteItems.containsKey(
+                            widget.product.id,
+                          )
+                          ? Icon(Icons.favorite, color: Colors.red)
+                          : Icon(Icons.favorite_border),
                     ),
                   ),
                   Positioned(
                     bottom: 0,
                     right: 0,
-                    child: Image.asset(
-                      'assets/icons/cart.png',
-                      height: 26,
-                      width: 26,
+                    child: InkWell(
+                      onTap: isInCart
+                          ? null
+                          : () {
+                              _cartProviderData.addProductToCart(
+                                productName: widget.product.productName,
+                                productPrice: widget.product.productPrice,
+                                category: widget.product.category,
+                                image: widget.product.images,
+                                vendorId: widget.product.vendorId,
+                                productQuantity: widget.product.quantity,
+                                quantity: 1,
+                                productId: widget.product.id,
+                                description: widget.product.description,
+                                fullName: widget.product.fullName,
+                              );
+
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(builder: (context) => CartScreen()),
+                              // );
+                              showSnackBar(context, widget.product.productName);
+                            },
+                      child: Image.asset(
+                        'assets/icons/cart.png',
+                        height: 26,
+                        width: 26,
+                      ),
                     ),
                   ),
                 ],
@@ -63,7 +123,7 @@ class ProductItemWidget extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              product.productName,
+              widget.product.productName,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.roboto(
                 fontSize: 13,
@@ -71,9 +131,24 @@ class ProductItemWidget extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            widget.product.averageRating == 0
+                ? SizedBox()
+                : Row(
+                    children: [
+                      Icon(Icons.star, color: Colors.amber, size: 12),
+                      const SizedBox(width: 4),
+                      Text(
+                        widget.product.averageRating.toStringAsFixed(1),
+                        style: GoogleFonts.montserrat(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
             const SizedBox(height: 4),
             Text(
-              product.category,
+              widget.product.category,
               style: GoogleFonts.quicksand(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
@@ -81,7 +156,7 @@ class ProductItemWidget extends StatelessWidget {
               ),
             ),
             Text(
-              "\$${product.productPrice.toStringAsFixed(2)}",
+              "\$${widget.product.productPrice.toStringAsFixed(2)}",
               style: GoogleFonts.montserrat(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
