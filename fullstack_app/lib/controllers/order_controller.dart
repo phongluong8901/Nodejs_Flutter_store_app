@@ -69,14 +69,14 @@ class OrderController {
   //method to get orsers by buyers id
   Future<List<Order>> loadOrders({required String buyerId}) async {
     try {
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      String? token = preferences.getString('auth_token');
+      // SharedPreferences preferences = await SharedPreferences.getInstance();
+      // String? token = preferences.getString('auth_token');
       //send an HTTP get request to get the orders by the buyerId
       http.Response response = await http.get(
         Uri.parse('$uri/api/orders/$buyerId'),
         headers: <String, String>{
           "Content-Type": 'application/json; charset=UTF-8',
-          'x-auth-token': token!,
+          // 'x-auth-token': token!,
         },
       );
       //check if the response status code is 200(OK)
@@ -124,6 +124,20 @@ class OrderController {
       );
     } catch (e) {
       showSnackBar(context, e.toString());
+    }
+  }
+
+  // method to count deliverd orders
+  Future<int> getDeliveredOrderCount({required String buyerId}) async {
+    try {
+      List<Order> orders = await loadOrders(buyerId: buyerId);
+      // Filter only delivered orders belonging to the correct buyer ID
+      int deliveredCount = orders
+          .where((order) => order.delivered && order.buyerId == buyerId)
+          .length;
+      return deliveredCount;
+    } catch (e) {
+      throw Exception("Error counting Delivered Orders");
     }
   }
 }

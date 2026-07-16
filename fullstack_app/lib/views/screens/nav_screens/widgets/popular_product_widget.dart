@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fullstack_app/controllers/product_controller.dart';
-import 'package:fullstack_app/models/product.dart';
 import 'package:fullstack_app/provider/product_provider.dart';
 import 'package:fullstack_app/views/screens/nav_screens/widgets/product_item_widget.dart';
 

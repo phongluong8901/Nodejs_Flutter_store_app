@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fullstack_app/models/user.dart';
+import 'package:fullstack_app/provider/deliverd_order_count_provider.dart';
 import 'package:fullstack_app/provider/user_provider.dart';
 import 'package:fullstack_app/services/manage_http_response.dart';
 import 'package:fullstack_app/views/global_variables.dart';
@@ -15,7 +16,7 @@ final providerContainer = ProviderContainer();
 class AuthController {
   // Register user
   Future<void> signUpUsers({
-    required context,
+    required BuildContext context,
     required String email,
     required String fullName,
     required String password,
@@ -59,9 +60,10 @@ class AuthController {
 
   // Signin user function
   Future<void> signInUsers({
-    required context,
+    required BuildContext context,
     required String email,
     required String password,
+    required WidgetRef ref,
   }) async {
     try {
       http.Response response = await http.post(
@@ -104,14 +106,15 @@ class AuthController {
   }
 
   //Signout
-  Future<void> signOutuser({required context}) async {
+  Future<void> signOutuser({required context, required WidgetRef ref}) async {
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       //clear the token and user from SharedPref
       await preferences.remove('auth_token');
       await preferences.remove('user');
       //clear the user state
-      providerContainer.read(userProvider.notifier).signOut();
+      ref.read(userProvider.notifier).signOut();
+      ref.read(deliveredOrderCountProvider.notifier).resetCount();
       //navigate the user back to the login screen
       Navigator.pushAndRemoveUntil(
         context,
@@ -131,11 +134,12 @@ class AuthController {
 
   //update user's state, city, locality
   Future<void> updateUserLocation({
-    required context,
+    required BuildContext context,
     required String id,
     required String state,
     required String city,
     required String locality,
+    required WidgetRef ref,
   }) async {
     try {
       //make an HTTP PUT request to update user's state, city and locality
@@ -163,7 +167,7 @@ class AuthController {
           final userJson = jsonEncode(updatedUser);
           //update the application state with the update user data user in Revipod
           //this ensures the app reflects the most recent user data
-          providerContainer.read(userProvider.notifier).setUser(userJson);
+          ref.read(userProvider.notifier).setUser(userJson);
           //store the updated user data in shared preference for future user
           //this allows the app to retrive the user data even after the app restarts
           await preferences.setString('user', userJson);

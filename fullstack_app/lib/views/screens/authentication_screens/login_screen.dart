@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fullstack_app/controllers/auth_controller.dart';
 import 'package:fullstack_app/views/screens/authentication_screens/register_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final AuthController _authController = AuthController();
@@ -33,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
           // password: password,
           email: _emailController.text,
           password: _passwordController.text,
+          ref: ref,
         )
         .whenComplete(() {
           setState(() {

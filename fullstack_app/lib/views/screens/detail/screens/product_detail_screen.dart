@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fullstack_app/controllers/product_controller.dart';
 import 'package:fullstack_app/models/product.dart';
 import 'package:fullstack_app/provider/cart_provider.dart';
 import 'package:fullstack_app/provider/favorite_provider.dart';
+import 'package:fullstack_app/provider/related_product_provider.dart';
 import 'package:fullstack_app/services/manage_http_response.dart';
-import 'package:fullstack_app/views/screens/nav_screens/cart_screen.dart';
+import 'package:fullstack_app/views/screens/nav_screens/widgets/product_item_widget.dart';
+import 'package:fullstack_app/views/screens/nav_screens/widgets/reuseble_text_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
@@ -17,7 +20,26 @@ class ProductDetailScreen extends ConsumerStatefulWidget {
 
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _fetchProduct();
+  }
+
+  Future<void> _fetchProduct() async {
+    final ProductController _productController = ProductController();
+    try {
+      final products = await _productController
+          .loadRelatedProductsBySubcategory(widget.product.id);
+      ref.read(relatedProductProvider.notifier).setProducts(products);
+    } catch (e) {
+      print("$e");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final relatedProducts = ref.watch(relatedProductProvider);
     final _cartProviderData = ref.read(cartProvider.notifier);
     final cartData = ref.watch(cartProvider);
     final isInCart = cartData.containsKey(widget.product.id);
@@ -196,6 +218,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ],
               ),
             ),
+            ReusableTextWidget(title: 'Related Products', subtitle: ''),
+            SizedBox(
+              height: 250,
+              child: ListView.builder(
+                itemCount: relatedProducts!.length,
+                itemBuilder: (context, index) {
+                  final product = relatedProducts[index];
+                  return ProductItemWidget(product: product);
+                },
+              ),
+            ),
+            const SizedBox(height: 60),
           ],
         ),
       ),

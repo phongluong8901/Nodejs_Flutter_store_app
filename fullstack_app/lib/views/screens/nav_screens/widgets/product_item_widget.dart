@@ -9,21 +9,21 @@ import 'package:google_fonts/google_fonts.dart';
 
 class ProductItemWidget extends ConsumerStatefulWidget {
   final Product product;
-  const ProductItemWidget({required this.product, super.key});
+
+  const ProductItemWidget({super.key, required this.product});
 
   @override
-  _ProductItemWidgetState createState() => _ProductItemWidgetState();
+  ConsumerState<ProductItemWidget> createState() => _ProductItemWidgetState();
 }
 
 class _ProductItemWidgetState extends ConsumerState<ProductItemWidget> {
   @override
   Widget build(BuildContext context) {
-    final _cartProviderData = ref.read(cartProvider.notifier);
+    final cartProviderData = ref.read(cartProvider.notifier);
     final cartData = ref.watch(cartProvider);
     final isInCart = cartData.containsKey(widget.product.id);
-    ref.watch(favoriteProvider);
     final favoriteProviderData = ref.read(favoriteProvider.notifier);
-
+    ref.watch(favoriteProvider);
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -44,7 +44,7 @@ class _ProductItemWidgetState extends ConsumerState<ProductItemWidget> {
             Container(
               height: 170,
               decoration: BoxDecoration(
-                color: Color(0xffF2F2F2),
+                color: const Color(0xffF2F2F2),
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Stack(
@@ -57,7 +57,7 @@ class _ProductItemWidgetState extends ConsumerState<ProductItemWidget> {
                   ),
                   Positioned(
                     top: 5,
-                    right: 2,
+                    right: 0,
                     child: InkWell(
                       onTap: () {
                         favoriteProviderData.addProductToFavorite(
@@ -72,6 +72,7 @@ class _ProductItemWidgetState extends ConsumerState<ProductItemWidget> {
                           description: widget.product.description,
                           fullName: widget.product.fullName,
                         );
+
                         showSnackBar(
                           context,
                           'added ${widget.product.productName}',
@@ -82,7 +83,7 @@ class _ProductItemWidgetState extends ConsumerState<ProductItemWidget> {
                             widget.product.id,
                           )
                           ? Icon(Icons.favorite, color: Colors.red)
-                          : Icon(Icons.favorite_border),
+                          : const Icon(Icons.favorite_border),
                     ),
                   ),
                   Positioned(
@@ -92,7 +93,7 @@ class _ProductItemWidgetState extends ConsumerState<ProductItemWidget> {
                       onTap: isInCart
                           ? null
                           : () {
-                              _cartProviderData.addProductToCart(
+                              cartProviderData.addProductToCart(
                                 productName: widget.product.productName,
                                 productPrice: widget.product.productPrice,
                                 category: widget.product.category,
@@ -105,10 +106,6 @@ class _ProductItemWidgetState extends ConsumerState<ProductItemWidget> {
                                 fullName: widget.product.fullName,
                               );
 
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(builder: (context) => CartScreen()),
-                              // );
                               showSnackBar(context, widget.product.productName);
                             },
                       child: Image.asset(
@@ -121,42 +118,40 @@ class _ProductItemWidgetState extends ConsumerState<ProductItemWidget> {
                 ],
               ),
             ),
-            const SizedBox(height: 8),
             Text(
               widget.product.productName,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.roboto(
-                fontSize: 13,
-                color: Color(0xFF212121),
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                color: const Color(0xFF212121),
                 fontWeight: FontWeight.bold,
               ),
             ),
             widget.product.averageRating == 0
-                ? SizedBox()
+                ? const SizedBox()
                 : Row(
                     children: [
-                      Icon(Icons.star, color: Colors.amber, size: 12),
+                      const Icon(Icons.star, color: Colors.amber, size: 12),
                       const SizedBox(width: 4),
                       Text(
                         widget.product.averageRating.toStringAsFixed(1),
                         style: GoogleFonts.montserrat(
                           fontWeight: FontWeight.bold,
-                          fontSize: 13,
+                          fontSize: 12,
                         ),
                       ),
                     ],
                   ),
-            const SizedBox(height: 4),
             Text(
               widget.product.category,
-              style: GoogleFonts.quicksand(
+              style: GoogleFonts.montserrat(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
-                color: Color(0xff868D94),
+                color: const Color(0xff868D94),
               ),
             ),
             Text(
-              "\$${widget.product.productPrice.toStringAsFixed(2)}",
+              '\$${widget.product.productPrice.toStringAsFixed(2)}',
               style: GoogleFonts.montserrat(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,

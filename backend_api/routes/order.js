@@ -23,7 +23,7 @@ orderRouter.post('/api/orders', auth, async(req, res) => {
 });
 
 // get route for fetching order by buyer ID
-orderRouter.get('/api/orders/:buyerId', auth, async(req, res) => {
+orderRouter.get('/api/orders/:buyerId', async(req, res) => {
     try {
         //extract the buyerid from the request parameters
         const {buyerId} = req.params;
