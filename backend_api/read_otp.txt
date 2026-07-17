@@ -1,0 +1,18 @@
+#--- aws
+
+--- IAM
+
+--- verify emails aws SES
+
+Đúng rồi bạn! AWS SES (Simple Email Service) là một dịch vụ cực kỳ ngon, bổ, rẻ để gửi email OTP (One-Time Password - Mã xác minh một lần) hoặc các loại email giao dịch (transactional emails).
+
+Tuy nhiên, khi dùng SES để gửi OTP, có một vài điểm mấu chốt bạn cần lưu ý để hệ thống chạy ổn định và khách hàng nhận được OTP tức thì:
+
+1. Ưu điểm vượt trội của AWS SES khi gửi OTP
+Giá siêu rẻ: Miễn phí 3.000 email/tháng (nếu chạy trên EC2 hoặc AWS Lambda), hoặc chỉ $0.10 cho mỗi 1.000 email tiếp theo. Rẻ hơn hàng chục lần so với Twilio, SendGrid...
+
+Tốc độ: Thời gian gửi/nhận email của SES thường rất nhanh (chỉ từ 1 - 3 giây là vào hộp thư), cực kỳ phù hợp cho OTP cần nhập ngay.
+
+--- aws cli
+
+--- aws client

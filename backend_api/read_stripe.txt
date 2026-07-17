@@ -1,0 +1,8 @@
+#--- signup
+console
+
+--- terminate
+npm install dotenv
+npm i stripe
+
+

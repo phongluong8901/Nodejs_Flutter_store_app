@@ -5,9 +5,21 @@ import 'package:fullstack_app/views/screens/authentication_screens/login_screen.
 import 'package:fullstack_app/views/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  //Run the flutter app warapped in a ProviderScope for manage state
+void main() async {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // // 1. Cấu hình Key chung (Dành cho Mobile)
+  // Stripe.publishableKey =
+  //     "pk_test_51TdRBT4bsbafdwTKe77spZOszzceWxMbjZw8qu36hXlEjGC95d4X1sx769ENyz17KjCCXt72azgdLh6B4lmZswbL00bJWGrwsY";
+  // await Stripe.instance.applySettings();
 
+  // // 2. Cấu hình RIÊNG cho Web nếu app đang chạy trên Chrome
+  // if (kIsWeb) {
+  //   WebStripe.instance.initialise(
+  //     publishableKey:
+  //         "pk_test_51TdRBT4bsbafdwTKe77spZOszzceWxMbjZw8qu36hXlEjGC95d4X1sx769ENyz17KjCCXt72azgdLh6B4lmZswbL00bJWGrwsY",
+  //   );
+  // }
+  //Run the flutter app warapped in a ProviderScope for manage state
   runApp(ProviderScope(child: const MyApp()));
 }
 

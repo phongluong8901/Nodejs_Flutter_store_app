@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fullstack_app/controllers/order_controller.dart';
@@ -13,12 +12,107 @@ class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
 
   @override
-  _CheckoutScreenState createState() => _CheckoutScreenState();
+  ConsumerState<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
 class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   String selectedPaymentMethod = 'stripe';
   final OrderController _orderController = OrderController();
+  bool isLoading = false;
+
+  // Future<void> handleStripePayment(BuildContext context) async {
+  //   //fetch the cart data from riverpod provider
+  //   final cartData = ref.read(cartProvider);
+  //   //fetch the user data from riverpod provider
+  //   final user = ref.read(userProvider);
+
+  //   //check if cart is empty
+  //   if (cartData.isEmpty) {
+  //     showSnackBar(context, 'Your cart is empty');
+  //     return;
+  //   }
+
+  //   //check if user is null
+  //   if (user == null) {
+  //     showSnackBar(context, 'User Information is missing');
+  //     return;
+  //   }
+
+  //   try {
+  //     setState(() {
+  //       isLoading = true;
+  //     });
+  //     //calculate the total amount for all item in cart
+  //     final totalAmount = cartData.values.fold(
+  //       0.0,
+  //       (sum, item) => sum + (item.quantity * item.productPrice),
+  //     );
+
+  //     //check if the totalAmount is a valid amount
+  //     if (totalAmount <= 0) {
+  //       showSnackBar(context, "Total amount must be greater than zero");
+  //       return;
+  //     }
+  //     //create a payment intent witht the calculated amount and currency
+  //     final paymentIntent = await _orderController.createPaymentIntent(
+  //       amount: (totalAmount * 100).toInt(),
+  //       currency: 'usd',
+  //     );
+
+  //     //initialize the stripe payment sheet with the payment intent details
+  //     await Stripe.instance.initPaymentSheet(
+  //       paymentSheetParameters: SetupPaymentSheetParameters(
+  //         paymentIntentClientSecret: paymentIntent['client_secret'],
+  //         merchantDisplayName: 'Maclay Store',
+  //       ),
+  //     );
+
+  //     //present the payment sheet to the user
+
+  //     await Stripe.instance.presentPaymentSheet();
+
+  //     //step 4 :verify payment intent status
+
+  //     final paymentIntentStatus = await _orderController.getPaymentIntentStatus(
+  //       context: context,
+  //       paymentIntentId: paymentIntent['id'],
+  //     );
+
+  //     //upload each cart item as an order to the server
+
+  //     if (paymentIntentStatus['status'] == 'succeeded') {
+  //       for (final entry in cartData.entries) {
+  //         final item = entry.value;
+
+  //         await _orderController.uploadOrders(
+  //           id: '',
+  //           fullName: ref.read(userProvider)!.fullName,
+  //           email: ref.read(userProvider)!.email,
+  //           state: ref.read(userProvider)!.state,
+  //           city: ref.read(userProvider)!.city,
+  //           locality: ref.read(userProvider)!.locality,
+  //           productName: item.productName,
+  //           productPrice: item.productPrice,
+  //           quantity: item.quantity,
+  //           category: item.category,
+  //           image: item.image[0],
+  //           buyerId: ref.read(userProvider)!.id,
+  //           vendorId: item.vendorId,
+  //           processing: true,
+  //           delivered: false,
+  //           context: context,
+  //         );
+  //       }
+  //     }
+  //   } catch (e) {
+  //     showSnackBar(context, 'Payment Failed : $e');
+  //   } finally {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     final cartData = ref.read(cartProvider);
@@ -33,7 +127,16 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return const ShippingAddressScreen();
+                      },
+                    ),
+                  );
+                },
                 child: SizedBox(
                   width: 335,
                   height: 74,
@@ -76,7 +179,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                         child: SizedBox(
                                           width: 114,
                                           child: user!.state.isNotEmpty
-                                              ? Text(
+                                              ? const Text(
                                                   'Address',
                                                   style: TextStyle(
                                                     fontSize: 14,
@@ -97,7 +200,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                       const SizedBox(height: 4),
                                       Align(
                                         alignment: Alignment.centerLeft,
-                                        child: user!.state.isNotEmpty
+                                        child: user.state.isNotEmpty
                                             ? Text(
                                                 user.state,
                                                 style: GoogleFonts.lato(
@@ -187,40 +290,21 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         ),
                       ),
                       Positioned(
-                        left: 300, // Bạn có thể chỉnh lại tọa độ cho cân đối
-                        top: 20,
-                        child: InkWell(
-                          onTap: () {
-                            // Điều hướng đến màn hình chỉnh sửa địa chỉ
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const ShippingAddressScreen(),
-                              ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(
-                              5.0,
-                            ), // Tạo vùng chạm rộng hơn
-                            child: Image.network(
-                              width: 20,
-                              height: 20,
-                              'https://firebasestorage.googleapis.com/v0/b/codeless-app.appspot.com/o/projects%2Fnn2Ldqjoc2Xp89Y7Wfzf%2F6ce18a0efc6e889de2f2878027c689c9caa53feeedit%201.png?alt=media&token=a3a8a999-80d5-4a2e-a9b7-a43a7fa8789a',
-                            ),
-                          ),
+                        left: 305,
+                        top: 25,
+                        child: Image.network(
+                          width: 20,
+                          height: 20,
+                          'https://firebasestorage.googleapis.com/v0/b/codeless-app.appspot.com/o/projects%2Fnn2Ldqjoc2Xp89Y7Wfzf%2F6ce18a0efc6e889de2f2878027c689c9caa53feeedit%201.png?alt=media&token=a3a8a999-80d5-4a2e-a9b7-a43a7fa8789a',
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-
               const SizedBox(height: 10),
-
               Text(
-                'your Item',
+                'Your Item',
                 style: GoogleFonts.quicksand(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -238,7 +322,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         width: 336,
                         height: 91,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFEFF0F2),
+                          color: Colors.white,
+                          border: Border.all(color: const Color(0xFFEFF0F2)),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Stack(
@@ -257,7 +342,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                       width: 78,
                                       height: 78,
                                       clipBehavior: Clip.hardEdge,
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                         color: Color(0xFFBCC5FF),
                                       ),
                                       child: Image.network(cartItem.image[0]),
@@ -266,7 +351,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                     Expanded(
                                       child: Container(
                                         height: 78,
-                                        alignment: Alignment(0, -0.51),
+                                        alignment: const Alignment(0, -0.51),
                                         child: SizedBox(
                                           width: double.infinity,
                                           child: Column(
@@ -284,7 +369,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                                   ),
                                                 ),
                                               ),
-                                              const SizedBox(height: 10),
+                                              const SizedBox(height: 4),
                                               Align(
                                                 alignment: Alignment.centerLeft,
                                                 child: Text(
@@ -308,6 +393,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                         fontSize: 14,
                                         color: Colors.pink,
                                         fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.3,
                                       ),
                                     ),
                                   ],
@@ -323,7 +409,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Chose payment Method',
+                'Choose Payment Method',
                 style: GoogleFonts.montserrat(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -334,7 +420,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   'Stripe',
                   style: GoogleFonts.montserrat(
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: 18,
                   ),
                 ),
                 value: 'stripe',
@@ -348,10 +434,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               RadioListTile<String>(
                 title: Text(
                   'Cash on Delivery',
-                  style: GoogleFonts.montserrat(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+                  style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),
                 ),
                 value: 'cashOnDelivery',
                 groupValue: selectedPaymentMethod,
@@ -367,21 +450,22 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: (user == null || user.state.isEmpty)
+        child: user.state.isEmpty
             ? TextButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ShippingAddressScreen(),
+                      builder: (context) {
+                        return const ShippingAddressScreen();
+                      },
                     ),
                   );
                 },
                 child: Text(
-                  "Please enter shipping address",
+                  'Please Enter Shipping Address',
                   style: GoogleFonts.montserrat(
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 1.7,
                     fontSize: 17,
                   ),
                 ),
@@ -389,8 +473,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             : InkWell(
                 onTap: () async {
                   if (selectedPaymentMethod == 'stripe') {
-                    //pay with stripe to place the order
+                    //pay with stripe to place the o rder
+                    // handleStripePayment(context);
                   } else {
+                    print('mee');
                     await Future.forEach(_cartProvider.getCartItems.entries, (
                       entry,
                     ) {
@@ -415,7 +501,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       );
                     }).then((value) {
                       _cartProvider.clearCart();
-                      showSnackBar(context, 'Order successfully placed');
+                      showSnackBar(context, 'Order successufully placed');
+                      // ignore: use_build_context_synchronously
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -431,20 +518,22 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   width: 338,
                   height: 58,
                   decoration: BoxDecoration(
-                    color: Color(0xFF3854EE),
+                    color: const Color(0xFF3854EE),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Center(
-                    child: Text(
-                      selectedPaymentMethod == 'stripe'
-                          ? "Pay Now"
-                          : "Place Order",
-                      style: GoogleFonts.montserrat(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
+                    child: isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : Text(
+                            selectedPaymentMethod == 'stripe'
+                                ? 'Pay Now'
+                                : "Place Order",
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
                   ),
                 ),
               ),

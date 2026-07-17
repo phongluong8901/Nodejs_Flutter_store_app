@@ -140,4 +140,92 @@ class OrderController {
       throw Exception("Error counting Delivered Orders");
     }
   }
+
+  Future<Map<String, dynamic>> createPaymentIntent({
+    required int amount,
+    required String currency,
+  }) async {
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      String? token = preferences.getString("auth_token");
+
+      http.Response response = await http.post(
+        Uri.parse('$uri/api/payment-intent'),
+        headers: <String, String>{
+          "Content-Type": 'application/json; charset=UTF-8',
+          'x-auth-token': token!,
+        },
+        body: jsonEncode({'amount': amount, 'currency': currency}),
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception("Failed to create payment  intent ${response.body}");
+      }
+    } catch (e) {
+      throw Exception("Error Create  Payment Intent: $e");
+    }
+  }
+
+  //retrive payment intent to know if the payment was successfull or not
+
+  Future<Map<String, dynamic>> getPaymentIntentStatus({
+    required context,
+    required String paymentIntentId,
+  }) async {
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      String? token = preferences.getString('auth_token');
+
+      http.Response response = await http.get(
+        Uri.parse('$uri/api/payment-intent/$paymentIntentId'),
+        headers: <String, String>{
+          "Content-Type": 'application/json; charset=UTF-8',
+          'x-auth-token': token!,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception("Failed to get payment  intent ${response.body}");
+      }
+    } catch (e) {
+      throw Exception("Failed to get payment  intent $e");
+    }
+  }
+
+  Future<Map<String, dynamic>> createStripeCustomer({
+    required String fullName,
+    required String email,
+    required context,
+  }) async {
+    try {
+      // Retrieve the token from SharedPreferences
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      String? token = preferences.getString('auth_token');
+
+      // Prepare the API request
+      http.Response response = await http.post(
+        Uri.parse('$uri/api/stripe/customers'),
+        headers: <String, String>{
+          "Content-Type": 'application/json; charset=UTF-8',
+          'x-auth-token': token!,
+        },
+        body: jsonEncode({'fullName': fullName, 'email': email}),
+      );
+
+      // Handle the response
+      if (response.statusCode == 201) {
+        // Parse and return the customer data
+        return jsonDecode(response.body);
+      } else {
+        // Throw an error if the response is not successful
+        throw Exception("Failed to create customer: ${response.body}");
+      }
+    } catch (e) {
+      showSnackBar(context, "Error creating Stripe customer: $e");
+      throw Exception("Error creating Stripe customer: $e");
+    }
+  }
 }

@@ -179,4 +179,41 @@ class AuthController {
       showSnackBar(context, 'Error updateing location');
     }
   }
+
+  //Verify Otp Method
+
+  Future<void> verifyOtp({
+    required BuildContext context,
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      http.Response response = await http.post(
+        Uri.parse('$uri/api/verify-otp'),
+        body: jsonEncode({"email": email, 'otp': otp}),
+        headers: <String, String>{
+          "Content-Type": 'application/json; charset=UTF-8',
+        },
+      );
+
+      manageHttpResponse(
+        response: response,
+        context: context,
+        onSuccess: () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return LoginScreen();
+              },
+            ),
+            (route) => false,
+          );
+          showSnackBar(context, 'Account verified . Please log in.');
+        },
+      );
+    } catch (e) {
+      showSnackBar(context, 'Error verifying  OTP:  $e');
+    }
+  }
 }
