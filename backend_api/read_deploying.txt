@@ -1,0 +1,25 @@
+#--- terminate
+heroku login
+
+git init
+git add .
+git commit -m "init"
+
+heroku create backend001
+heroku git:remote - a backend001
+git push  heroku main
+
+-> da deploy server len public
+
+
+#--- console heroku
+dashboard app backend001
+-> lay uri moi cua heroku cho flutter 
+
+#--- deploy lai sau edit
+heroku login
+
+git init
+git add .
+git commit -m "edit init"
+git push  heroku main
