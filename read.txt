@@ -1,0 +1,58 @@
+
+#--- link
+- app
+https://github.com/Macaulayfamous/Flutter-customer-multi-vendor-app-
+- vendor app
+https://github.com/Macaulayfamous/Fllutter-Node-Vendor-App/tree/main
+- server
+https://github.com/Macaulayfamous/Multi-Store-Nodejs-Backend
+- web admin
+https://github.com/Macaulayfamous/web-admin-node-panel-
+---
+
+git push -u origin FE_1_10/07/2026
+
+#---
+git add .
+
+#---
+git commit -m "add nodejs + mongoose"
+
+#---
+git push -u origin FE_1_10/07/2026
+
+#---
+git checkout -b 11/07/2026
+git add .
+git commit -m "change: add backend Apis"
+git push -u origin 11/07/2026
+
+#---
+git checkout -b 13/07/2026
+git add .
+git commit -m "change: add signout"
+git push -u origin 13/07/2026
+
+#---
+git checkout -b 14/07/2026
+git add .
+git commit -m "change: product, detail (vendor + user)"
+git push -u origin 14/07/2026
+
+#---
+git checkout -b 15/07/2026
+git add .
+git commit -m "change: improve (detail,home,checkout,address)"
+git push -u origin 15/07/2026
+
+#---
+git checkout -b 16/07/2026
+git add .
+git commit -m "change: sharedPerference cart, favorite (customer)"
+git push -u origin 16/07/2026
+
+#---
+git checkout -b 17/07/2026
+git add .
+git commit -m "change: improve code before deploying"
+git push -u origin 17/07/2026
