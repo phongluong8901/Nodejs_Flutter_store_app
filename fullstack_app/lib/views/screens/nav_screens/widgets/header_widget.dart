@@ -1,5 +1,6 @@
 import 'dart:ui'; // Bắt buộc cho BackdropFilter
 import 'package:flutter/material.dart';
+import 'package:fullstack_app/views/screens/detail/screens/search_product_screen.dart';
 
 class HeaderWidget extends StatelessWidget {
   final VoidCallback? onBack; // Thêm tham số này
@@ -38,7 +39,17 @@ class HeaderWidget extends StatelessWidget {
                     border: Border.all(color: Colors.white.withOpacity(0.3)),
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  child: const TextField(
+                  child: TextField(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return SearchProductScreen();
+                          },
+                        ),
+                      );
+                    },
                     decoration: InputDecoration(
                       hintText: 'Enter text',
                       hintStyle: TextStyle(color: Colors.white70),
