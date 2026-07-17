@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const Vendor = require('../models/vendor'); // 1. ĐÃ THÊM: Import model Vendor để không bị lỗi "Vendor is not defined"
 
 //authentication middleware
 //this middlware func checks if the user is authenticated
@@ -29,7 +30,7 @@ const auth = async(req, res, next) => {
 
         //proceed to the next middleware or route handler
         next();
-    } catch (error) {
+    } catch (e) { // 2. ĐÃ SỬA: Đổi "error" thành "e" để khớp với "e.message" ở dưới
          res.status(500).json({error:e.message});  
     }
 };

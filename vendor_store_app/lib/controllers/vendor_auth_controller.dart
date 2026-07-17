@@ -8,6 +8,7 @@ import 'package:vendor_store_app/services/manage_http_response.dart';
 import 'package:vendor_store_app/views/global_variables.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vendor_store_app/views/screens/authentication/login_screen.dart';
 import 'package:vendor_store_app/views/screens/main_vendor_screen.dart';
 
 final providerContainer = ProviderContainer();
@@ -74,14 +75,27 @@ class VendorAuthController {
         context: context,
         onSuccess: () async {
           SharedPreferences preferences = await SharedPreferences.getInstance();
-          String token = jsonDecode(response.body)['token'];
+
+          // 1. Giải mã body response thô từ server
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+          String token = responseData['token'];
+
+          // Lưu token riêng vào preferences
           await preferences.setString('auth_token', token);
 
-          final vendorJson = jsonEncode(jsonDecode(response.body)['vendor']);
+          // 2. Lấy Map dữ liệu vendor ra
+          final Map<String, dynamic> vendorMap = responseData['vendor'];
 
-          // DÙNG REF ĐỂ CẬP NHẬT TRẠNG THÁI (Đừng dùng providerContainer)
+          // 🌟 BƯỚC QUAN TRỌNG: Gán thêm token trực tiếp vào map này trước khi chuyển đổi
+          vendorMap['token'] = token;
+
+          // 3. Tiến hành mã hóa lại thành JSON string
+          final vendorJson = jsonEncode(vendorMap);
+
+          // Cập nhật trạng thái vào Riverpod Provider (lúc này token đã tồn tại bên trong!)
           ref.read(vendorProvider.notifier).setVendor(vendorJson);
 
+          // Lưu chuỗi vendor hoàn chỉnh vào preferences phòng trường hợp cần dùng lại
           await preferences.setString('vendor', vendorJson);
 
           Navigator.pushAndRemoveUntil(
@@ -90,12 +104,41 @@ class VendorAuthController {
             (route) => false,
           );
           showSnackBar(context, 'Logged in successfully');
+
           final currentVendor = ref.read(vendorProvider);
-          print("DEBUG: Sau khi đăng nhập, dữ liệu Vendor là: $currentVendor");
+          print(
+            "DEBUG: Dữ liệu Vendor sau khi fix: id=${currentVendor?.id}, token=${currentVendor?.token}",
+          );
         },
       );
     } catch (e) {
       showSnackBar(context, '$e');
+    }
+  }
+
+  //Signout
+  Future<void> signOutuser({required context, required WidgetRef ref}) async {
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      //clear the token and user from SharedPref
+      await preferences.remove('auth_token');
+      await preferences.remove('user');
+      //clear the user state
+      ref.read(vendorProvider.notifier).signOut();
+      //navigate the user back to the login screen
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return LoginScreen();
+          },
+        ),
+        (route) => false,
+      );
+
+      showSnackBar(context, 'signout successfully');
+    } catch (error) {
+      showSnackBar(context, 'error signing out');
     }
   }
 }

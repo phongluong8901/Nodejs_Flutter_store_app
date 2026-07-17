@@ -52,7 +52,8 @@ class Product {
       vendorId: map['vendorId'] as String,
       fullName: map['fullName'] as String,
       subCategory: map['subCategory'] as String,
-      images: List<String>.from((map['images'] as List<String>)),
+      // Chuyển đổi an toàn từ List<dynamic> sang List<String>, phòng hờ trường hợp null bằng toán tử ?? []
+      images: List<String>.from(map['images'] ?? []),
     );
   }
 

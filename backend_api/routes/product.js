@@ -157,36 +157,36 @@ productRouter.get('/api/search-products',async(req,res)=>{
 });
 
 //Route to edit an existing product
-productRouter.put('/api/edit-product/:productId',auth,vendorAuth, async (req, res) => {
+productRouter.put('/api/edit-product/:productId', auth, vendorAuth, async (req, res) => {
   try {
-    ///Extract product ID from the request parameter
-    const {productId} = req.params;
+    const { productId } = req.params;
+    
+    // 🌟 THÊM DÒNG NÀY ĐỂ DEBUG:
+    console.log("DỮ LIỆU NHẬN ĐƯỢC TỪ FLUTTER:", req.body);
 
-    //Check if the product exists and if the vendor  is authrorized to edit it 
-   const product = await Product.findById(productId);
-   if(!product){
-    return res.status(404).json({msg:"Product not found "});
-   }
-   if(product.vendorId.toString()!== req.user.id){
-    return res.status(403).json({msg:"Unauthorized to edit this  product"});
-   }
-   
-  //Destructure req.body to exclude  vendorid
-  
-  const {vendorId, ...updateData} = req.body;
-  //update the product with  the fields provided in updateData
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ msg: "Product not found " });
+    }
 
- const updatedProduct = await  Product.findByIdAndUpdate(
-    productId,
-    {$set:updateData},//update only fields in the updateData 
-    {new:true}//return the updated  product document  in the response
-);
+    if (product.vendorId.toString() !== req.user.id) { // hoặc req.user tùy theo bản sửa trước
+      return res.status(403).json({ msg: "Unauthorized to edit this product" });
+    }
 
-//return the updated product with 200 ok status
-return res.status(200).json(updatedProduct);
+    const { vendorId, ...updateData } = req.body;
 
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      { $set: updateData },
+      { new: true }
+    );
+
+    // 🌟 THÊM DÒNG NÀY ĐỂ XEM DỮ LIỆU SAU KHI UPDATE:
+    console.log("DỮ LIỆU SAU KHI UPDATE TRONG DB:", updatedProduct);
+
+    return res.status(200).json(updatedProduct);
   } catch (e) {
-    return res.status(500).json({error:e.message});
+    return res.status(500).json({ error: e.message });
   }
 });
 

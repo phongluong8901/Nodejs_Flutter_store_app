@@ -25,7 +25,8 @@ app.use(cors({
     origin: '*', 
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Origin', 'Content-Type', 'Accept', 'Authorization']
+    allowedHeaders: ['Origin', 'Content-Type', 'Accept', 'Authorization', 'x-auth-token'],
+    exposedHeaders: ['x-auth-token']
 }));
 
 //middleware - toregister routes or to mount routes

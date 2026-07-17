@@ -95,4 +95,130 @@ class ProductController {
       showSnackBar(context, 'Select Image');
     }
   }
+
+  // ================= CẦN THÊM MỚI =================
+
+  // Hàm 2: Lấy toàn bộ sản phẩm của Vendor phục vụ màn hình chỉnh sửa sản phẩm
+  Future<List<Product>> getVendorProducts({
+    required String vendorId,
+    required context,
+  }) async {
+    List<Product> productList = [];
+    try {
+      http.Response response = await http.get(
+        Uri.parse("$uri/api/products/vendor/$vendorId"),
+        headers: <String, String>{
+          "Content-Type": "application/json; charset=UTF-8",
+        },
+      );
+
+      if (context.mounted) {
+        manageHttpResponse(
+          response: response,
+          context: context,
+          onSuccess: () {
+            // Kiểm tra và parse data từ backend trả về mảng danh sách sản phẩm
+            final List<dynamic> data = jsonDecode(response.body);
+            for (var item in data) {
+              productList.add(Product.fromMap(item));
+            }
+          },
+        );
+      }
+    } catch (e) {
+      showSnackBar(context, 'Error loading products: $e');
+    }
+    return productList;
+  }
+
+  // Hàm 3: Chỉnh sửa sản phẩm hiện tại (Đồng bộ với Route PUT /api/edit-product/:productId)
+  Future<void> updateProduct({
+    required String productId,
+    required String productName,
+    required int productPrice,
+    required int quantity,
+    required String description,
+    required String category,
+    required String subCategory,
+    required List<String> existingImages, // Giữ các ảnh cũ không thay đổi
+    required List<XFile>?
+    newPickedImages, // Ảnh mới chọn thêm từ Vendor App (nếu có)
+    required String
+    token, // THAY ĐỔI: Truyền trực tiếp token từ vendorProvider vào đây
+    required context,
+    required Function
+    onSuccess, // Callback để reload UI sau khi cập nhật thành công
+  }) async {
+    try {
+      // 1. Kiểm tra nếu token trống thì dừng lại luôn để tránh lỗi ClientException
+      if (token.isEmpty) {
+        showSnackBar(context, 'Phiên đăng nhập hết hạn. Vui lòng thử lại!');
+        return;
+      }
+
+      List<String> finalImages = List.from(existingImages);
+
+      // Nếu người dùng chọn thêm ảnh mới trong màn hình chỉnh sửa thì upload lên Cloudinary
+      if (newPickedImages != null && newPickedImages.isNotEmpty) {
+        final cloudinary = CloudinaryPublic("detbxbjxd", "nodejs_vendor_app");
+        for (var i = 0; i < newPickedImages.length; i++) {
+          CloudinaryResponse response;
+          if (kIsWeb) {
+            final bytes = await newPickedImages[i].readAsBytes();
+            response = await cloudinary.uploadFile(
+              CloudinaryFile.fromBytesData(
+                bytes,
+                identifier: newPickedImages[i].path.split('/').last,
+                folder: productName,
+              ),
+            );
+          } else {
+            response = await cloudinary.uploadFile(
+              CloudinaryFile.fromFile(
+                newPickedImages[i].path,
+                folder: productName,
+              ),
+            );
+          }
+          finalImages.add(response.secureUrl);
+        }
+      }
+
+      // Xây dựng body dữ liệu gửi lên API chỉnh sửa
+      final Map<String, dynamic> updateData = {
+        'productName': productName,
+        'productPrice': productPrice,
+        'quantity': quantity,
+        'description': description,
+        'category': category,
+        'subCategory': subCategory,
+        'images': finalImages,
+      };
+
+      // Thực hiện gửi dữ liệu lên Server NodeJS
+      http.Response response = await http.put(
+        Uri.parse("$uri/api/edit-product/$productId"),
+        body: jsonEncode(updateData),
+        headers: <String, String>{
+          "Content-Type": "application/json; charset=UTF-8",
+          'x-auth-token': token, // Dùng token truyền từ Provider
+        },
+      );
+
+      print("Dữ liệu thô từ Server: ${response.body}");
+
+      if (context.mounted) {
+        manageHttpResponse(
+          response: response,
+          context: context,
+          onSuccess: () {
+            showSnackBar(context, 'Cập nhật sản phẩm thành công!');
+            onSuccess(); // Kích hoạt callback refresh danh sách ở màn hình View
+          },
+        );
+      }
+    } catch (e) {
+      showSnackBar(context, 'Lỗi khi cập nhật sản phẩm: $e');
+    }
+  }
 }

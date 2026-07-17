@@ -43,7 +43,7 @@ authRouter.post('/api/signin', async(req,res) => {
            if(!isMatch) {
                 return res.status(400).json({msg:'Incorrect Password'});
            } else {
-                const token = jwt.sign({id:findUser._id}, "passwordKey");
+                const token = jwt.sign({id:findUser._id}, "passwordKey", {expiresIn: '100m'});
 
                 //remove sensitive information
                 const {password, ...userWithoutPassword} = findUser._doc;
@@ -56,6 +56,31 @@ authRouter.post('/api/signin', async(req,res) => {
         res.status(500).json({error: error.message});
     }
 });
+
+//check token vality
+authRouter.post('/tokenIsValid',async (req,res)=>{
+   try {
+    const token  = req.header("x-auth-token");
+    if(!token) return res.json(false);// if no token , return false
+
+    //verify the token
+   const  verified =   jwt.verify(token, "passwordKey");
+   if(!verified) return res.json(false);
+   //if verification failed(expired or invalid ), jwt.verify will throw an error 
+   const user =  await User.findById(verified.id);
+
+   if(!user) return  res.json(false);
+
+   //if everything is valid,  return true
+
+  return  res.json(true);
+
+   } catch (e) {
+    //if jwt.verify fails or  any other errors occurs , return false 
+
+    return res.status(500).json({error:e.message});
+   }
+})
 
 //route for updating user's state, city and localitu
 authRouter.put('/api/users/:id', async(req, res) => {
