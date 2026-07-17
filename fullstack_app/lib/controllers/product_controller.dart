@@ -40,6 +40,8 @@ class ProductController {
             .toList();
 
         return products;
+      } else if (response.statusCode == 404) {
+        return [];
       } else {
         throw Exception("Failed to load popular products");
       }
@@ -68,6 +70,8 @@ class ProductController {
             .toList();
 
         return products;
+      } else if (response.statusCode == 404) {
+        return [];
       } else {
         // Trả về danh sách rỗng hoặc throw Exception nếu có lỗi
         throw Exception(

@@ -1,220 +1,184 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fullstack_app/controllers/category_controller.dart';
 import 'package:fullstack_app/controllers/subcategory_controller.dart';
 import 'package:fullstack_app/models/category.dart';
-import 'package:fullstack_app/models/subcategory.dart';
+import 'package:fullstack_app/provider/category_provider.dart';
+import 'package:fullstack_app/provider/subcategory_provider.dart';
+import 'package:fullstack_app/views/screens/detail/screens/subcategory_product_screen.dart';
+import 'package:fullstack_app/views/screens/detail/screens/widgets/subcategory_tile_widget.dart';
 import 'package:fullstack_app/views/screens/nav_screens/widgets/header_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class CategoryScreen extends StatefulWidget {
+class CategoryScreen extends ConsumerStatefulWidget {
   const CategoryScreen({super.key});
 
   @override
-  State<CategoryScreen> createState() => _CategoryScreenState();
+  ConsumerState<CategoryScreen> createState() => _CategoryScreenState();
 }
 
-class _CategoryScreenState extends State<CategoryScreen> {
-  late Future<List<CategoryModel>> futureCategories;
+class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   CategoryModel? _selectedCategory;
-  List<Subcategory> _subcategories = [];
-  final SubcategoryController _subcategoryController = SubcategoryController();
 
   @override
   void initState() {
     super.initState();
-    futureCategories = CategoryController().loadCategories();
+
+    //load categories initially
+
+    _fetchCategories();
   }
 
-  Future<void> _loadSubcategories(String categoryName) async {
-    final subcategories = await _subcategoryController
+  Future<void> _fetchCategories() async {
+    final categories = await CategoryController().loadCategories();
+    ref.read(categoryProvider.notifier).setCategories(categories);
+
+    //set the default selected category (e.g) "fashion",
+    for (var category in categories) {
+      if (category.name == "Fashion") {
+        setState(() {
+          _selectedCategory = category;
+        });
+
+        //load subcategories  for the default category
+
+        _fetchSubcategories(category.name);
+      }
+    }
+  }
+
+  Future<void> _fetchSubcategories(String categoryName) async {
+    final subcategories = await SubcategoryController()
         .getSubCategoriesByCategoryName(categoryName);
-    setState(() {
-      _subcategories = subcategories;
-    });
+    ref.read(subcategoryProvider.notifier).setSubcategories(subcategories);
   }
 
   @override
   Widget build(BuildContext context) {
+    final categories = ref.watch(categoryProvider);
+    final subcategories = ref.watch(subcategoryProvider);
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(60),
-        child: HeaderWidget(),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 20),
+        child: const HeaderWidget(),
       ),
       body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Sidebar danh mục
+          //left side - Display categories
           Expanded(
             flex: 2,
             child: Container(
-              color: Colors.grey.shade50,
-              child: FutureBuilder<List<CategoryModel>>(
-                future: futureCategories,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Lỗi: ${snapshot.error}'));
-                  }
-                  final categories = snapshot.data ?? [];
-                  return ListView.separated(
-                    itemCount: categories.length,
-                    separatorBuilder: (context, index) =>
-                        Divider(height: 1, color: Colors.grey.shade200),
-                    itemBuilder: (context, index) {
-                      final category = categories[index];
-                      bool isSelected = _selectedCategory == category;
-                      return InkWell(
-                        onTap: () {
-                          setState(() => _selectedCategory = category);
-                          _loadSubcategories(category.name);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 20,
-                            horizontal: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? Colors.white
-                                : Colors.transparent,
-                            border: Border(
-                              left: BorderSide(
-                                color: isSelected
-                                    ? Colors.blue
-                                    : Colors.transparent,
-                                width: 4,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            category.name,
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.quicksand(
-                              fontSize: 14,
-                              fontWeight: isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.w500,
-                              color: isSelected ? Colors.blue : Colors.black87,
-                            ),
-                          ),
-                        ),
-                      );
+              color: Colors.grey.shade200,
+              child: ListView.builder(
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  final category = categories[index];
+                  return ListTile(
+                    onTap: () {
+                      setState(() {
+                        _selectedCategory = category;
+                      });
+                      _fetchSubcategories(category.name);
                     },
+                    title: Text(
+                      category.name,
+                      style: GoogleFonts.quicksand(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: _selectedCategory == category
+                            ? Colors.blue
+                            : Colors.black,
+                      ),
+                    ),
                   );
                 },
               ),
             ),
           ),
-
-          // Nội dung chi tiết danh mục
+          //Right side - Display selected category details
           Expanded(
             flex: 5,
-            child: _selectedCategory == null
-                ? const Center(child: Text("Chọn một danh mục để xem chi tiết"))
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
+            child: _selectedCategory != null
+                ? SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Banner
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Image.network(
-                            _selectedCategory!.banner,
-                            height: 160,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                                  height: 160,
-                                  color: Colors.grey.shade200,
-                                  child: const Icon(
-                                    Icons.broken_image,
-                                    size: 50,
-                                  ),
-                                ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            _selectedCategory!.name,
+                            style: GoogleFonts.quicksand(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.7,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 25),
-                        Text(
-                          "Danh mục con",
-                          style: GoogleFonts.quicksand(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: _subcategories.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3,
-                                mainAxisSpacing: 15,
-                                crossAxisSpacing: 15,
-                                childAspectRatio: 0.9,
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            height: 150,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: NetworkImage(_selectedCategory!.banner),
+                                fit: BoxFit.cover,
                               ),
-                          itemBuilder: (context, index) {
-                            final sub = _subcategories[index];
-                            return Column(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: Colors.grey.shade200,
-                                      ),
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.network(
-                                        sub.image.replaceAll(' ', ''),
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) =>
-                                                const Center(
-                                                  child: Icon(
-                                                    Icons.broken_image,
-                                                    color: Colors.grey,
-                                                  ),
-                                                ),
-                                        loadingBuilder:
-                                            (context, child, loadingProgress) {
-                                              if (loadingProgress == null)
-                                                return child;
-                                              return const Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                                      strokeWidth: 2,
-                                                    ),
-                                              );
-                                            },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  sub.subCategoryName,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            );
-                          },
+                            ),
+                          ),
                         ),
+                        subcategories.isNotEmpty
+                            ? GridView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: subcategories.length,
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      mainAxisSpacing: 4,
+                                      crossAxisSpacing: 8,
+                                      childAspectRatio: 2 / 3,
+                                    ),
+                                itemBuilder: (context, index) {
+                                  final subcategory = subcategories[index];
+
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return SubcategoryProductScreen(
+                                              subcategory: subcategory,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
+                                    child: SubcategoryTileWidget(
+                                      image: subcategory.image,
+                                      title: subcategory.subCategoryName,
+                                    ),
+                                  );
+                                },
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Center(
+                                  child: Text(
+                                    'No Sub categories',
+                                    style: GoogleFonts.quicksand(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1.7,
+                                    ),
+                                  ),
+                                ),
+                              ),
                       ],
                     ),
-                  ),
+                  )
+                : Container(),
           ),
         ],
       ),

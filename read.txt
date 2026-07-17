@@ -50,3 +50,9 @@ git checkout -b 16/07/2026
 git add .
 git commit -m "change: sharedPerference cart, favorite (customer)"
 git push -u origin 16/07/2026
+
+#---
+git checkout -b 17/07/2026
+git add .
+git commit -m "change: improve code before deploying"
+git push -u origin 17/07/2026

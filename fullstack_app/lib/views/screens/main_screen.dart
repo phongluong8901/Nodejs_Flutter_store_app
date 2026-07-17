@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fullstack_app/views/screens/nav_screens/account_screen.dart';
 import 'package:fullstack_app/views/screens/nav_screens/cart_screen.dart';
 import 'package:fullstack_app/views/screens/nav_screens/category_screen.dart';
@@ -26,6 +27,9 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+    );
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.purple,
